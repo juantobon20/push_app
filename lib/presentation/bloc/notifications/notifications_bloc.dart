@@ -70,6 +70,11 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     );
   }
 
+  void _initialStatusCheck() async {
+    final settings = await messaging.getNotificationSettings();
+    add(NotificationStatusChanged(settings.authorizationStatus));
+  }
+
   void _getFCMToken() async {
     if (state.authorizationStatus != AuthorizationStatus.authorized) {
       return;
@@ -107,13 +112,6 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
   void _onForegroundMessage() {
     FirebaseMessaging.onMessage.listen(handleRemoteMessage);
-  }
-
-  void _initialStatusCheck() async {
-    final settings = await messaging.getNotificationSettings();
-    add(NotificationStatusChanged(settings.authorizationStatus));
-
-    _getFCMToken();
   }
 
   void requestPermission() async {
